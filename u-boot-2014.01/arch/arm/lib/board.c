@@ -21,7 +21,7 @@
  * IRQ Stack: 00ebff7c
  * FIQ Stack: 00ebef7c
  */
-
+#define DEBUG
 #include <common.h>
 #include <command.h>
 #include <environment.h>
@@ -555,7 +555,7 @@ void board_init_r(gd_t *id, ulong dest_addr)
 	arch_early_init_r();
 #endif
 	power_init_board();
-
+#if 0
 #if !defined(CONFIG_SYS_NO_FLASH)
 	puts("Flash: ");
 
@@ -582,7 +582,7 @@ void board_init_r(gd_t *id, ulong dest_addr)
 		hang();
 	}
 #endif
-
+#endif
 #if defined(CONFIG_CMD_NAND)
 	puts("NAND:  ");
 	nand_init();		/* go init the NAND */

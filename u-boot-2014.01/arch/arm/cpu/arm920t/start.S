@@ -146,20 +146,44 @@ copyex:
 	/*
 	 * mask all IRQs by setting all bits in the INTMR - default
 	 */
-	mov	r1, #0xffffffff
+	mov	r1, #0xffffffff 
 	ldr	r0, =INTMSK
 	str	r1, [r0]
 # if defined(CONFIG_S3C2410)
 	ldr	r1, =0x3ff
+#elif defined(CONFIG_S3C2440)
+	ldr	r1, =0x7fff
 	ldr	r0, =INTSUBMSK
 	str	r1, [r0]
 # endif
+
+# if defined(CONFIG_S3C2440)   //添加s3c2440的时钟部分
+#   define MPLLCON   0x4C000004   //系统主频配置寄存器基地址
+#   define UPLLCON   0x4C000008   //USB时钟频率配置寄存器基地址
+#   define CAMDIVN      0x4C000018
+
+    /* FCLK:HCLK:PCLK = 1:4:8 */
+    ldr r0, =CLKDIVN
+    mov r1, #5
+    str r1, [r0]
+
+    /*CPU bus mode: fast bus mode -> the asynchronous bus mode */
+    mrc p15, 0, r1, c1, c0, 0 /*read ctrl register */
+    orr r1, r1, #0xc0000000 /*Asynchronous */
+    mcr p15, 0, r1, c1, c0, 0 /*write ctrl register */
+
+    ldr  r0, =MPLLCON  //设置系统主频为405MHz
+    ldr  r1, =0x7f021 
+    str  r1, [r0]
+
+#else
 
 	/* FCLK:HCLK:PCLK = 1:2:4 */
 	/* default FCLK is 120 MHz ! */
 	ldr	r0, =CLKDIVN
 	mov	r1, #3
 	str	r1, [r0]
+#endif	/* CONFIG_S3C2440 */
 #endif	/* CONFIG_S3C24X0 */
 
 	/*
