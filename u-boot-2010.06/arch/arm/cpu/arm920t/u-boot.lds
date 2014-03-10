@@ -40,6 +40,8 @@ SECTIONS
 	.text :
 	{
 		arch/arm/cpu/arm920t/start.o	(.text)
+		board/fl/fl2440/lowlevel_init.o	(.text)
+		board/fl/fl2440/nand_read.o	(.text)
 		*(.text)
 	}
 

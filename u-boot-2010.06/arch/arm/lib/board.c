@@ -295,6 +295,12 @@ void start_armboot (void)
 		}
 	}
 
+	/*
+	*(unsigned int *)(0x56000010) = 0x1dd7f0;
+	*(unsigned int *)(0x56000018) = 0x7ff;
+	*(unsigned int *)(0x56000014) = 0x7be;
+	*/
+
 	/* armboot_start is defined in the board-specific linker script */
 	mem_malloc_init (_armboot_start - CONFIG_SYS_MALLOC_LEN,
 			CONFIG_SYS_MALLOC_LEN);

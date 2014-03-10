@@ -1,6 +1,6 @@
 /*
  * (C) Copyright 2003
- * David Müller ELSOFT AG Switzerland. d.mueller@elsoft.ch
+ * David MÃ¼ller ELSOFT AG Switzerland. d.mueller@elsoft.ch
  *
  * See file CREDITS for list of people who contributed to this
  * project.
@@ -122,6 +122,7 @@ struct s3c24x0_clock_power {
 	u32	CLKCON;
 	u32	CLKSLOW;
 	u32	CLKDIVN;
+	u32	CAMDIVN;
 };
 
 
@@ -397,7 +398,7 @@ struct s3c24x0_gpio {
 	u32	MISCCR;
 	u32	EXTINT;
 #endif
-#ifdef CONFIG_S3C2410
+#if defined(CONFIG_S3C2410)||defined(CONFIG_S3C2440)
 	u32	GPACON;
 	u32	GPADAT;
 	u32	res1[2];
