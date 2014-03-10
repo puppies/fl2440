@@ -94,20 +94,20 @@
 #define B5_PMC			0x0	/* normal */
 
 #define B6_MT			0x3	/* SDRAM */
-#define B6_Trcd			0x1
+#define B6_Trcd			0x0
 #define B6_SCAN			0x1	/* 9bit */
 
 #define B7_MT			0x3	/* SDRAM */
-#define B7_Trcd			0x1	/* 3clk */
+#define B7_Trcd			0x0	/* 3clk */
 #define B7_SCAN			0x1	/* 9bit */
 
 /* REFRESH parameter */
 #define REFEN			0x1	/* Refresh enable */
 #define TREFMD			0x0	/* CBR(CAS before RAS)/Auto refresh */
-#define Trp			0x0	/* 2clk */
 #define Trc			0x3	/* 7clk */
 #define Tchr			0x2	/* 3clk */
-#define REFCNT			1113	/* period=15.6us, HCLK=60Mhz, (2048+1-15.6*60) */
+#define Trp			0x2	/* 2clk */
+#define REFCNT			0x4f1	/* period=15.6us, HCLK=60Mhz, (2048+1-15.6*60) */
 /**************************************/
 
 _TEXT_BASE:
@@ -123,6 +123,16 @@ lowlevel_init:
 	sub	r0, r0, r1
 	ldr	r1, =BWSCON	/* Bus Width Status Controller */
 	add     r2, r0, #13*4
+
+
+ldr r6,=0x56000050
+                                                                                                                                               
+   ldr  r7,=0xaa6a
+   str  r7, [r6]
+   mov  r7, #0xf7
+   str  r7, [r6, #0x8]
+   mov  r7, #0xf7
+   str  r7, [r6, #0x4]
 0:
 	ldr     r3, [r0], #4
 	str     r3, [r1], #4
@@ -147,5 +157,5 @@ SMRDATA:
     .word ((B7_MT<<15)+(B7_Trcd<<2)+(B7_SCAN))
     .word ((REFEN<<23)+(TREFMD<<22)+(Trp<<20)+(Trc<<18)+(Tchr<<16)+REFCNT)
     .word 0x32
-    .word 0x30
-    .word 0x30
+    .word 0x20
+    .word 0x20

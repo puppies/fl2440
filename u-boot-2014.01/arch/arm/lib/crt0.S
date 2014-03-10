@@ -71,7 +71,8 @@ ENTRY(_main)
 	bic	sp, sp, #7	/* 8-byte alignment for ABI compliance */
 	mov	r9, sp		/* GD is above SP */
 	mov	r0, #0
-	bl	board_init_f
+/*	bl	board_init_f */
+	ldr	pc, =board_init_f
 
 #if ! defined(CONFIG_SPL_BUILD)
 
@@ -106,10 +107,10 @@ clbss_l:cmp	r0, r1			/* while not at end of BSS */
 	strlo	r2, [r0]		/* clear 32-bit BSS word */
 	addlo	r0, r0, #4		/* move to next */
 	blo	clbss_l
-
+/*
 	bl coloured_LED_init
 	bl red_led_on
-
+*/
 	/* call board_init_r(gd_t *id, ulong dest_addr) */
 	mov     r0, r9                  /* gd_t */
 	ldr	r1, [r9, #GD_RELOCADDR]	/* dest_addr */

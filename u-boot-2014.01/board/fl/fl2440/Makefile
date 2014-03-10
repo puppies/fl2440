@@ -6,4 +6,5 @@
 #
 
 obj-y	:= fl2440.o
-obj-y	+= lowlevel_init.o
+extra-y	= lowlevel_init.o
+extra-y	= nand_read.o

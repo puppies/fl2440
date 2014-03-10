@@ -19,6 +19,9 @@ SECTIONS
 	{
 		*(.__image_copy_start)
 		CPUDIR/start.o (.text*)
+		board/fl/fl2440/lowlevel_init.o(.text*)
+		arch/arm/lib/crt0.o(.text*)
+		board/fl/fl2440/nand_read.o(.text*)
 		*(.text*)
 	}
 

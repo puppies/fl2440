@@ -23,6 +23,7 @@
 #include "linux/compat.h"
 #include "linux/mtd/mtd.h"
 #include "linux/mtd/bbm.h"
+#include <asm/cache.h>
 
 
 struct mtd_info;

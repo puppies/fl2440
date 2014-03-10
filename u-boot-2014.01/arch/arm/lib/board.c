@@ -62,6 +62,7 @@ extern void dataflash_print_info(void);
  ************************************************************************
  * May be supplied by boards if desired
  */
+/*
 inline void __coloured_LED_init(void) {}
 void coloured_LED_init(void)
 	__attribute__((weak, alias("__coloured_LED_init")));
@@ -81,7 +82,7 @@ inline void __blue_led_on(void) {}
 void blue_led_on(void) __attribute__((weak, alias("__blue_led_on")));
 inline void __blue_led_off(void) {}
 void blue_led_off(void) __attribute__((weak, alias("__blue_led_off")));
-
+*/
 /*
  ************************************************************************
  * Init Utilities							*
@@ -125,6 +126,7 @@ static int display_banner(void)
  * gives a simple yet clear indication which part of the
  * initialization if failing.
  */
+/*
 static int display_dram_config(void)
 {
 	int i;
@@ -148,7 +150,7 @@ static int display_dram_config(void)
 
 	return (0);
 }
-
+*/
 #if defined(CONFIG_HARD_I2C) || defined(CONFIG_SYS_I2C)
 static int init_func_i2c(void)
 {
@@ -197,7 +199,7 @@ static int arm_pci_init(void)
  */
 typedef int (init_fnc_t) (void);
 
-int print_cpuinfo(void);
+//int print_cpuinfo(void);
 
 void __dram_init_banksize(void)
 {
@@ -206,7 +208,7 @@ void __dram_init_banksize(void)
 }
 void dram_init_banksize(void)
 	__attribute__((weak, alias("__dram_init_banksize")));
-
+/*
 int __arch_cpu_init(void)
 {
 	return 0;
@@ -220,7 +222,7 @@ int __power_init_board(void)
 }
 int power_init_board(void)
 	__attribute__((weak, alias("__power_init_board")));
-
+*/
 	/* Record the board_init_f() bootstage (after arch_cpu_init()) */
 static int mark_bootstage(void)
 {
@@ -230,7 +232,7 @@ static int mark_bootstage(void)
 }
 
 init_fnc_t *init_sequence[] = {
-	arch_cpu_init,		/* basic arch cpu dependent setup */
+//	arch_cpu_init,		/* basic arch cpu dependent setup */
 	mark_bootstage,
 #ifdef CONFIG_OF_CONTROL
 	fdtdec_check_fdt,
@@ -251,7 +253,7 @@ init_fnc_t *init_sequence[] = {
 	console_init_f,		/* stage 1 init of console */
 	display_banner,		/* say that we are here */
 #if defined(CONFIG_DISPLAY_CPUINFO)
-	print_cpuinfo,		/* display cpu info (and speed) */
+//	print_cpuinfo,		/* display cpu info (and speed) */
 #endif
 #if defined(CONFIG_DISPLAY_BOARDINFO)
 	checkboard,		/* display board info */
@@ -276,6 +278,9 @@ void board_init_f(ulong bootflag)
 	size_t fdt_size = 0;
 
 	memset((void *)gd, 0, sizeof(gd_t));
+	*(unsigned int *)(0x56000010) = 0x1dd7f0;
+	*(unsigned int *)(0x56000018) = 0x7ff;
+	*(unsigned int *)(0x56000014) = 0x7be;
 
 	gd->mon_len = _bss_end_ofs;
 #ifdef CONFIG_OF_EMBED
@@ -288,6 +293,7 @@ void board_init_f(ulong bootflag)
 	/* Allow the early environment to override the fdt address */
 	gd->fdt_blob = (void *)getenv_ulong("fdtcontroladdr", 16,
 						(uintptr_t)gd->fdt_blob);
+
 
 	for (init_fnc_ptr = init_sequence; *init_fnc_ptr; ++init_fnc_ptr) {
 		if ((*init_fnc_ptr)() != 0) {
@@ -451,7 +457,7 @@ void board_init_f(ulong bootflag)
 	gd->bd->bi_baudrate = gd->baudrate;
 	/* Ram ist board specific, so move it to board code ... */
 	dram_init_banksize();
-	display_dram_config();	/* and display it */
+//	display_dram_config();	/* and display it */
 
 	gd->relocaddr = addr;
 	gd->start_addr_sp = addr_sp;
@@ -554,7 +560,7 @@ void board_init_r(gd_t *id, ulong dest_addr)
 #ifdef CONFIG_ARCH_EARLY_INIT_R
 	arch_early_init_r();
 #endif
-	power_init_board();
+//	power_init_board();
 #if 0
 #if !defined(CONFIG_SYS_NO_FLASH)
 	puts("Flash: ");

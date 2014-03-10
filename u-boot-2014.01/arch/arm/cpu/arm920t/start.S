@@ -139,6 +139,44 @@ copyex:
 #  define CLKDIVN	0x4C000014	/* clock divisor register */
 # endif
 
+#  define CLK_CTL_BASE 0x4C000000 
+#  define MDIV_405 0x7f << 12 
+#  define PSDIV_405 0x21 
+#  define MDIV_200 0xa1 << 12
+#  define PSDIV_200 0x31 
+
+	ldr     r0, =pWTCON
+	mov     r1, #0x0
+	str     r1, [r0]
+
+	/*
+	 * mask all IRQs by setting all bits in the INTMR - default
+	 */
+	ldr	r1,=0xffffffff
+	ldr	r0, =INTMSK
+	str	r1, [r0]
+
+    ldr r1, =0x7fff /*���2440оƬ�ֲᣬINTSUBMSK��15λ����*/
+    ldr r0, =INTSUBMSK
+    str r1, [r0]
+
+
+
+    /* FCLK:HCLK:PCLK = 1:4:8 */
+    ldr r0, =CLKDIVN
+    mov r1, #5
+    str r1, [r0]
+  
+    mrc p15, 0, r1, c1, c0, 0 /*read ctrl register */
+    orr r1, r1, #0xc0000000 /*Asynchronous */
+    mcr p15, 0, r1, c1, c0, 0 /*write ctrl register */
+    /*now, CPU clock is 405.00 Mhz */
+    mov r1, #CLK_CTL_BASE /* */
+    mov r2, #MDIV_405 /* mpll_405mhz */
+    add r2, r2, #PSDIV_405 /* mpll_405mhz */
+    str r2, [r1, #0x04] /* MPLLCON */
+
+#if 0
 	ldr	r0, =pWTCON
 	mov	r1, #0x0
 	str	r1, [r0]
@@ -184,6 +222,7 @@ copyex:
 	mov	r1, #3
 	str	r1, [r0]
 #endif	/* CONFIG_S3C2440 */
+#endif
 #endif	/* CONFIG_S3C24X0 */
 
 	/*
@@ -194,7 +233,113 @@ copyex:
 	bl	cpu_init_crit
 #endif
 
-	bl	_main
+
+
+#ifdef FL2440_NAND_BOOT
+#define NAND_CTL_BASE 0x4E000000
+/* Offset */
+#define oNFCONF 0x00
+#define oNFCONT 0x04
+#define oNFCMD 0x08
+#define oNFSTAT 0x20
+#define LENGTH_UBOOT 0x40000
+
+    mov r1, #NAND_CTL_BASE
+    ldr r2, =((0<<12)|(1<<8)|(0<<4))
+    str r2, [r1, #oNFCONF]
+
+
+    ldr r2, =((1<<4)|(0<<1)|(1<<0))
+    str r2, [r1, #oNFCONT]
+
+
+    ldr r2, =(1<<2)
+    str r2, [r1, #oNFSTAT]
+
+
+    mov r2, #0xFF
+    strb r2, [r1, #oNFCMD]
+
+    mov r3, #0
+wait:
+    add r3,r3,#0x1
+    cmp r3,#0xa
+    blt wait
+
+
+ready:
+    ldr r2,[r1, #oNFSTAT]
+    tst r2,#0x4
+    beq ready
+
+    ldr r2,[r1, #oNFCONT]
+    orr r2,r2,#0x2
+    str r2,[r1, #oNFCONT]
+
+
+/* setup stack for C code */
+    ldr sp,DW_STACK_START
+    mov fp,#0x0
+
+    ldr r0,_TEXT_BASE
+    mov r1,#0x0
+    mov r2,#LENGTH_UBOOT
+
+    bl nand_read_ll
+    
+    tst r0,#0x0
+    beq verify
+loop:
+    b loop
+verify:
+    mov r0,#0x0
+    ldr r1,_TEXT_BASE
+    mov r2,#0x400
+go_next:
+    ldr    r3, [r0], #4
+    ldr    r4, [r1], #4
+    teq    r3, r4
+    bne    notmatch
+    subs    r2, r2, #4
+    beq    stack_setup
+    bne    go_next
+notmatch:
+loop3:
+    b    loop3    @ infinite loop
+#endif
+
+	/* Set up the stack						    */
+stack_setup:
+	ldr	r0, _TEXT_BASE		/* upper 128 KiB: relocated uboot   */
+	sub	r0, r0, #CONFIG_SYS_MALLOC_LEN	/* malloc area                      */
+	sub	r0, r0, #GENERATED_GBL_DATA_SIZE /* bdinfo                        */
+#ifdef CONFIG_USE_IRQ
+	sub	r0, r0, #(CONFIG_STACKSIZE_IRQ+CONFIG_STACKSIZE_FIQ)
+#endif
+	sub	sp, r0, #12		/* leave 3 words for abort-stack    */
+
+clear_bss:
+	ldr	r0, =__bss_start		/* find start of bss segment        */
+	ldr	r1, =__bss_end		/* stop here                        */
+	mov	r2, #0x00000000		/* clear                            */
+
+clbss_l:str	r2, [r0]		/* clear loop...                    */
+	add	r0, r0, #4
+	cmp	r0, r1
+	 bne clbss_l
+	ldr	pc, =board_init_f
+
+/*_start_armboot:	.word start_armboot */
+
+    
+#define STACK_BASE 0x33ff8000
+#define STACK_SIZE 0x10000
+    .align    2
+DW_STACK_START:    .word    STACK_BASE+STACK_SIZE-4 
+
+
+
+/*	bl	_main */
 
 /*------------------------------------------------------------------------------*/
 
@@ -246,6 +391,7 @@ cpu_init_crit:
 	mov	lr, ip
 	mov	pc, lr
 #endif /* CONFIG_SKIP_LOWLEVEL_INIT */
+
 
 /*
  *************************************************************************

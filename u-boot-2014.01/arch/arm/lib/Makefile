@@ -20,7 +20,8 @@ endif
 ifdef CONFIG_ARM64
 obj-y	+= crt0_64.o
 else
-obj-y	+= crt0.o
+#obj-y	+= crt0.o
+extra-y	+= crt0.o
 endif
 
 ifndef CONFIG_SPL_BUILD

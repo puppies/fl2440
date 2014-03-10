@@ -16,7 +16,7 @@ static const getfreq freq_f[] = {
 	get_HCLK,
 	get_PCLK,
 };
-
+#if 0
 static const char freq_c[] = { 'F', 'H', 'P' };
 
 int print_cpuinfo(void)
@@ -36,3 +36,4 @@ int print_cpuinfo(void)
 
 	return 0;
 }
+#endif
