@@ -236,6 +236,7 @@ static void nand_select_chip(struct mtd_info *mtd, int chipnr)
 		chip->cmd_ctrl(mtd, NAND_CMD_NONE, 0 | NAND_CTRL_CHANGE);
 		break;
 	case 0:
+		chip->cmd_ctrl(mtd, NAND_CMD_NONE, NAND_NCE | NAND_CTRL_CHANGE);
 		break;
 
 	default:
@@ -2636,6 +2637,9 @@ static struct nand_flash_dev *nand_get_flash_type(struct mtd_info *mtd,
 
 	tmp_manf = chip->read_byte(mtd);
 	tmp_id = chip->read_byte(mtd);
+
+	MTDDEBUG (MTD_DEBUG_LEVEL0, "NAND device: Manufacturer ID:"
+	          " 0x%02x, Chip ID: 0x%02x\n", *maf_id, dev_id);
 
 	if (tmp_manf != *maf_id || tmp_id != dev_id) {
 		printk(KERN_INFO "%s: second ID read did not match "
