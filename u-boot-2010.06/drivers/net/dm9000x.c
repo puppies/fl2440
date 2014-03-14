@@ -68,7 +68,7 @@ TODO: external MII is not functional, only internal at the moment.
 
 /* Board/System/Debug information/definition ---------------- */
 
-/* #define CONFIG_DM9000_DEBUG */
+// #define CONFIG_DM9000_DEBUG 
 
 #ifdef CONFIG_DM9000_DEBUG
 #define DM9000_DBG(fmt,args...) printf(fmt, ##args)

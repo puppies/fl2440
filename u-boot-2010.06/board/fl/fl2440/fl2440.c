@@ -113,7 +113,7 @@ int board_init (void)
 	gpio->GPHUP = 0x000007FF;
 
 	/* arch number of SMDK2410-Board */
-	gd->bd->bi_arch_number = MACH_TYPE_SMDK2410;
+	gd->bd->bi_arch_number = MACH_TYPE_S3C2440;
 
 	/* adress of boot parameters */
 	gd->bd->bi_boot_params = 0x30000100;
@@ -138,6 +138,9 @@ int board_eth_init(bd_t *bis)
 	int rc = 0;
 #ifdef CONFIG_CS8900
 	rc = cs8900_initialize(0, CONFIG_CS8900_BASE);
+#endif
+#ifdef CONFIG_DRIVER_DM9000
+	rc = dm9000_initialize(bis);
 #endif
 	return rc;
 }

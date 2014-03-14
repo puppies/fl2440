@@ -46,6 +46,7 @@
 #define USE_920T_MMU		1
 #undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
 
+//#define CONFIG_SKIP_LOWLEVEL_INIT
 #define CONFIG_SKIP_RELOCATE_UBOOT
 #define FL2440_NAND_BOOT
 /*
@@ -58,10 +59,12 @@
  * Hardware drivers
  */
 #define CONFIG_NET_MULTI
-#define CONFIG_CS8900		/* we have a CS8900 on-board */
-#define CONFIG_CS8900_BASE	0x19000300
-#define CONFIG_CS8900_BUS16	/* the Linux driver does accesses as shorts */
-
+#define CONFIG_DRIVER_DM9000		/* we have a DM9000 on-board */
+#define CONFIG_DM9000_BASE	0x20000000
+#define DM9000_IO		CONFIG_DM9000_BASE
+#define DM9000_DATA		(CONFIG_DM9000_BASE+0x4)
+#define CONFIG_DM9000_BUS16	/* the Linux driver does accesses as shorts */
+//#define CONFIG_DM9000_DEBUG
 /*
  * select serial console configuration
  */
@@ -96,16 +99,17 @@
 #define CONFIG_CMD_CACHE
 #define CONFIG_CMD_DATE
 #define CONFIG_CMD_ELF
-#define CONFIG_CMD_NET
+#define CONFIG_CMD_PING
+#define CONFIG_CMD_NAND
 
 #define CONFIG_BOOTDELAY	3
-/*#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" */
-/*#define CONFIG_ETHADDR	08:00:3e:26:0a:5b */
+#define CONFIG_BOOTARGS	"root=ramfs devfs=mount console=ttySA0,9600" 
+#define CONFIG_ETHADDR	08:00:3e:26:0a:5b 
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_IPADDR		10.0.0.110
 #define CONFIG_SERVERIP		10.0.0.1
-/*#define CONFIG_BOOTFILE	"elinos-lart" */
-/*#define CONFIG_BOOTCOMMAND	"tftp; bootm" */
+#define CONFIG_BOOTFILE	"elinos-lart" 
+#define CONFIG_BOOTCOMMAND	"tftp; bootm" 
 
 #if defined(CONFIG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	115200		/* speed to run kgdb serial port */
@@ -144,6 +148,44 @@
 #define CONFIG_STACKSIZE_FIQ	(4*1024)	/* FIQ stack */
 #endif
 
+
+#define CONFIG_MTD_DEBUG
+#define CONFIG_MTD_DEBUG_VERBOSE 3
+#define CONFIG_NAND_S3C2440
+
+/* NAND configuration */
+#define CONFIG_SYS_MAX_NAND_DEVICE	1
+#define CONFIG_SYS_NAND_BASE		0x4E000000
+//#define CONFIG_S3C2440_NAND_HWECC
+
+//#define CONFIG_SYS_NAND_SKIP_BAD_DOT_I	1  /* ".i" read skips bad blocks	      */
+
+
+/* NAND chip page size		*/
+#define CONFIG_SYS_NAND_PAGE_SIZE	2048
+/* NAND chip block size		*/
+#define CONFIG_SYS_NAND_BLOCK_SIZE	(128 * 1024)
+/* NAND chip page per block count  */
+#define CONFIG_SYS_NAND_PAGE_COUNT	64
+/* Location of the bad-block label */
+#define CONFIG_SYS_NAND_BAD_BLOCK_POS	0
+/* Extra address cycle for > 128MiB */
+#define CONFIG_SYS_NAND_5_ADDR_CYCLE
+
+/* Size of the block protected by one OOB (Spare Area in Samsung terminology) */
+#define CONFIG_SYS_NAND_ECCSIZE	CONFIG_SYS_NAND_PAGE_SIZE
+/* Number of ECC bytes per OOB - S3C6400 calculates 4 bytes ECC in 1-bit mode */
+#define CONFIG_SYS_NAND_ECCBYTES	4
+/* Number of ECC-blocks per NAND page */
+#define CONFIG_SYS_NAND_ECCSTEPS	(CONFIG_SYS_NAND_PAGE_SIZE / CONFIG_SYS_NAND_ECCSIZE)
+/* Size of a single OOB region */
+#define CONFIG_SYS_NAND_OOBSIZE	64
+/* Number of ECC bytes per page */
+#define CONFIG_SYS_NAND_ECCTOTAL	(CONFIG_SYS_NAND_ECCBYTES * CONFIG_SYS_NAND_ECCSTEPS)
+/* ECC byte positions */
+#define CONFIG_SYS_NAND_ECCPOS		{40, 41, 42, 43, 44, 45, 46, 47, \
+				 48, 49, 50, 51, 52, 53, 54, 55, \
+				 56, 57, 58, 59, 60, 61, 62, 63}
 /*-----------------------------------------------------------------------
  * Physical Memory Map
  */
