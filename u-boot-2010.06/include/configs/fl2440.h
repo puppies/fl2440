@@ -117,6 +117,11 @@
 #define CONFIG_KGDB_SER_INDEX	1		/* which serial port to use */
 #endif
 
+
+
+#define CONFIG_CMDLINE_TAG
+#define CONFIG_SETUP_MEMORY_TAGS
+
 /*
  * Miscellaneous configurable options
  */
