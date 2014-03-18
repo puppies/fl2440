@@ -58,7 +58,6 @@ static void s3c2440_hwcontrol(struct mtd_info *mtd, int cmd, unsigned int ctrl)
 	struct s3c2440_nand *nand = s3c2440_get_base_nand();
 
 	debugX(1, "hwcontrol(): 0x%02x 0x%02x\n", cmd, ctrl);
-	printf("hwcontrol(): 0x%02x 0x%02x\n", cmd, ctrl);
 
 	if (ctrl & NAND_CTRL_CHANGE) {
 		ulong IO_ADDR_W = (ulong)nand;
