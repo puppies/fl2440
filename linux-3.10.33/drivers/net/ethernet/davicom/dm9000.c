@@ -1373,6 +1373,26 @@ dm9000_probe(struct platform_device *pdev)
 	int i;
 	u32 id_val;
 
+
+
+
+    	static void *gpfcon;
+    	static void *extint0;
+    	static void *intmsk;
+        #define GPFCON           (0x56000050)
+        #define EXTINT0           (0x56000088)
+        #define INTMSK           (0x4A000008)
+     
+      	gpfcon=ioremap_nocache(GPFCON,0x0000004);
+       	extint0=ioremap_nocache(EXTINT0,0x0000004);
+        intmsk=ioremap_nocache(INTMSK,0x0000004);
+	                
+  	writel( (readl(gpfcon) & ~(0x3 << 14)) | (0x2 << 14), gpfcon); 
+   	writel( readl(gpfcon) | (0x1 << 7), gpfcon); // Disable pull-up
+    	writel( (readl(extint0) & ~(0xf << 28)) | (0x4 << 28), extint0); //rising edge
+     	writel( (readl(intmsk))  & ~0x10, intmsk); 
+
+
 	/* Init network device */
 	ndev = alloc_etherdev(sizeof(struct board_info));
 	if (!ndev)
@@ -1521,6 +1541,7 @@ dm9000_probe(struct platform_device *pdev)
 			break;
 		dev_err(db->dev, "read wrong id 0x%08x\n", id_val);
 	}
+		printk("id 0x%08x\n", id_val);
 
 	if (id_val != DM9000_ID) {
 		dev_err(db->dev, "wrong id: 0x%08x\n", id_val);

@@ -74,6 +74,7 @@ extern struct platform_device s3c_device_usbgadget;
 extern struct platform_device s3c_device_usb_hsotg;
 extern struct platform_device s3c_device_usb_hsudc;
 extern struct platform_device s3c_device_wdt;
+extern struct platform_device s3c_device_eth;
 
 extern struct platform_device s5p_device_ehci;
 extern struct platform_device s5p_device_fimc0;

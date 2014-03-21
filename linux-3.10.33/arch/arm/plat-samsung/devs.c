@@ -66,6 +66,7 @@
 #include <plat/regs-serial.h>
 #include <plat/regs-spi.h>
 #include <linux/platform_data/spi-s3c64xx.h>
+#include <linux/dm9000.h>
 
 static u64 samsung_device_dma_mask = DMA_BIT_MASK(32);
 
@@ -1602,3 +1603,31 @@ void __init s3c64xx_spi2_set_platdata(int (*cfg_gpio)(void), int src_clk_nr,
 	s3c_set_platdata(&pd, sizeof(pd), &s3c64xx_device_spi2);
 }
 #endif /* CONFIG_S3C64XX_DEV_SPI2 */
+
+
+/* DM9000AEP 10/100 ethernet controller */
+#define MACH_FL2440_DM9K_BASE 0x20000000
+static struct resource fl2440_dm9k_resource[] = {
+	[0] = DEFINE_RES_MEM(MACH_FL2440_DM9K_BASE, 4),
+	[1] = DEFINE_RES_MEM(MACH_FL2440_DM9K_BASE + 4, 4),
+	[2] = DEFINE_RES_NAMED(IRQ_EINT7, 1, NULL, IORESOURCE_IRQ \
+						| IORESOURCE_IRQ_HIGHEDGE),
+};
+
+/*
+ * The DM9000 has no eeprom, and it's MAC address is set by
+ * the bootloader before starting the kernel.
+ */
+static struct dm9000_plat_data fl2440_dm9k_pdata = {
+	.flags		= (DM9000_PLATF_16BITONLY | DM9000_PLATF_NO_EEPROM),
+};
+
+struct platform_device s3c_device_eth = {
+	.name		= "dm9000",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(fl2440_dm9k_resource),
+	.resource	= fl2440_dm9k_resource,
+	.dev		= {
+		.platform_data	= &fl2440_dm9k_pdata,
+	},
+};
